@@ -1,10 +1,56 @@
+<!-- File: frontend/checkout.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-$END$
+<div class="top-bar">
+    <div class="container">
+        <span>Giao hàng toàn quốc | Hỗ trợ trả góp | Hotline: 0123 456 789</span>
+    </div>
+</div>
+
+<header class="main-header">
+    <div class="container header-content">
+        <div class="logo">SHOP ĐIỆN TỬ</div>
+        <div class="header-icons">
+            <a href="index.html">Trang chủ</a>
+            <a href="cart.html">Giỏ hàng</a>
+        </div>
+    </div>
+</header>
+
+<main class="container checkout-container">
+    <h2>Thông tin thanh toán</h2>
+    <form class="checkout-form">
+        <label for="fullname">Họ và tên:</label>
+        <input type="text" id="fullname" name="fullname" required>
+
+        <label for="address">Địa chỉ giao hàng:</label>
+        <input type="text" id="address" name="address" required>
+
+        <label for="phone">Số điện thoại:</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="payment">Phương thức thanh toán:</label>
+        <select id="payment" name="payment">
+            <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+            <option value="bank">Chuyển khoản ngân hàng</option>
+            <option value="momo">Ví MoMo</option>
+        </select>
+
+        <button type="submit">Xác nhận đơn hàng</button>
+    </form>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 Shop Bán Đồ Điện Tử | Chính sách bảo mật | Điều khoản sử dụng</p>
+    </div>
+</footer>
 </body>
 </html>

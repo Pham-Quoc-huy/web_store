@@ -1,10 +1,67 @@
+<!-- File: frontend/order-history.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử đơn hàng</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-$END$
+<div class="top-bar">
+    <div class="container">
+        <span>Giao hàng toàn quốc | Hỗ trợ trả góp | Hotline: 0123 456 789</span>
+    </div>
+</div>
+
+<header class="main-header">
+    <div class="container header-content">
+        <div class="logo">SHOP ĐIỆN TỬ</div>
+        <div class="header-icons">
+            <a href="index.html">Trang chủ</a>
+            <a href="cart.html">Giỏ hàng</a>
+        </div>
+    </div>
+</header>
+
+<main class="container order-history">
+    <h2>Lịch sử đơn hàng của bạn</h2>
+    <table class="order-table">
+        <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Ngày đặt</th>
+            <th>Sản phẩm</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Đánh giá</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>#1001</td>
+            <td>12/04/2025</td>
+            <td>Tivi LG 50 inch</td>
+            <td>12,000,000 VND</td>
+            <td>Đã giao</td>
+            <td><button>Đánh giá</button></td>
+        </tr>
+        <tr>
+            <td>#1002</td>
+            <td>09/04/2025</td>
+            <td>Tủ lạnh Samsung</td>
+            <td>10,500,000 VND</td>
+            <td>Đang giao</td>
+            <td>—</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 Shop Bán Đồ Điện Tử | Chính sách bảo mật | Điều khoản sử dụng</p>
+    </div>
+</footer>
 </body>
 </html>

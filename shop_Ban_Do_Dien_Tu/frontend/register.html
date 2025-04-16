@@ -1,10 +1,59 @@
+<!-- File: frontend/register.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-$END$
+<div class="top-bar">
+    <div class="container">
+        <span>Giao hàng toàn quốc | Hỗ trợ trả góp | Hotline: 0123 456 789</span>
+    </div>
+</div>
+
+<header class="main-header">
+    <div class="container header-content">
+        <div class="logo">SHOP ĐIỆN TỬ</div>
+        <div class="header-icons">
+            <a href="index.html">Trang chủ</a>
+            <a href="login.html">Đăng nhập</a>
+        </div>
+    </div>
+</header>
+
+<main class="container auth-container">
+    <h2>Đăng ký tài khoản</h2>
+    <form class="auth-form">
+        <label for="fullname">Họ và tên:</label>
+        <input type="text" id="fullname" name="fullname" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="phone">Số điện thoại:</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="username">Tên đăng nhập:</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">Mật khẩu:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="confirm-password">Nhập lại mật khẩu:</label>
+        <input type="password" id="confirm-password" name="confirm-password" required>
+
+        <button type="submit">Đăng ký</button>
+    </form>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 Shop Bán Đồ Điện Tử | Chính sách bảo mật | Điều khoản sử dụng</p>
+    </div>
+</footer>
+<script src="js/register.js"></script>
 </body>
 </html>

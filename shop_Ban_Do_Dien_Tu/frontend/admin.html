@@ -1,10 +1,87 @@
+<!-- File: frontend/admin.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Quản lý cửa hàng</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<header class="main-header">
+    <div class="container header-content">
+        <div class="logo">ADMIN DASHBOARD</div>
+        <div class="header-icons">
+            <a href="index.html">Về trang người dùng</a>
+        </div>
+    </div>
+</header>
 
+<main class="container admin-panel">
+    <h2>Quản lý cửa hàng</h2>
+
+    <div class="admin-section">
+        <h3>Danh sách sản phẩm</h3>
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên sản phẩm</th>
+                <th>Giá</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>Tivi LG 50 inch</td>
+                <td>12,000,000 VND</td>
+                <td>Hiển thị</td>
+                <td><button>Sửa</button> <button>Xóa</button></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Tủ lạnh Samsung</td>
+                <td>10,500,000 VND</td>
+                <td>Ẩn</td>
+                <td><button>Sửa</button> <button>Xóa</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin-section">
+        <h3>Danh sách đơn hàng</h3>
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Cập nhật</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>#1001</td>
+                <td>Nguyễn Văn A</td>
+                <td>12/04/2025</td>
+                <td>12,000,000 VND</td>
+                <td>Đang giao</td>
+                <td><button>Cập nhật</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 Quản trị viên - Shop Bán Đồ Điện Tử</p>
+    </div>
+</footer>
 </body>
 </html>

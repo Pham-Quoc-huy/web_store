@@ -1,7 +1,6 @@
 package com.example.shop_ban_do_dien_tu.controller;
 
 import com.example.shop_ban_do_dien_tu.model.Product;
-import com.example.shop_ban_do_dien_tu.model.Category;
 import com.example.shop_ban_do_dien_tu.service.IProductService;
 import com.example.shop_ban_do_dien_tu.service.ICategoryService;
 import org.springframework.stereotype.Controller;
