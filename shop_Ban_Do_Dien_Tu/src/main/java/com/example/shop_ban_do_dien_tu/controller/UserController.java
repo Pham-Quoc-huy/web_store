@@ -3,14 +3,13 @@ package com.example.shop_ban_do_dien_tu.controller;
 import com.example.shop_ban_do_dien_tu.model.User;
 import com.example.shop_ban_do_dien_tu.service.IUserService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
-@Controller
+@RestController  // Chuyển từ @Controller sang @RestController
 public class UserController {
 
     private final IUserService userService;
@@ -19,47 +18,49 @@ public class UserController {
         this.userService = userService;
     }
 
+    // ✅ USER: Hiển thị trang đăng nhập
     @GetMapping("/login")
-    public String showLogin() {
-        return "login";
+    public ResponseEntity<String> showLogin() {
+        return ResponseEntity.ok("Please provide username and password"); // Trả về thông báo yêu cầu đăng nhập
     }
 
+    // ✅ USER: Thực hiện đăng nhập
     @PostMapping("/login")
-    public String doLogin(@RequestParam String username,
-                          @RequestParam String password,
-                          HttpSession session,
-                          RedirectAttributes redirectAttributes) {
+    public ResponseEntity<String> doLogin(@RequestParam String username,
+                                          @RequestParam String password,
+                                          HttpSession session) {
         Optional<User> user = userService.login(username, password);
         if (user.isPresent()) {
             session.setAttribute("loggedInUser", user.get());
-            return "redirect:/";
+            return ResponseEntity.ok("Login successful");
         } else {
-            redirectAttributes.addFlashAttribute("error", "Sai tài khoản hoặc mật khẩu");
-            return "redirect:/login";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password");
         }
     }
 
+    // ✅ USER: Hiển thị trang đăng ký
     @GetMapping("/register")
-    public String showRegister(Model model) {
-        model.addAttribute("user", new User());
-        return "register";
+    public ResponseEntity<String> showRegister() {
+        return ResponseEntity.ok("Please provide user details to register"); // Trả về thông báo yêu cầu thông tin đăng ký
     }
 
+    // ✅ USER: Thực hiện đăng ký
     @PostMapping("/register")
-    public String doRegister(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<String> doRegister(@RequestBody User user) {
         try {
             userService.register(user);
-            redirectAttributes.addFlashAttribute("success", "Đăng ký thành công! Đăng nhập ngay.");
-            return "redirect:/login";
+            return ResponseEntity.ok("Registration successful! Please log in.");
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/register";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 
+    // ✅ USER: Đăng xuất
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public ResponseEntity<String> logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/login";
+        return ResponseEntity.ok("Logout successful");
     }
 }

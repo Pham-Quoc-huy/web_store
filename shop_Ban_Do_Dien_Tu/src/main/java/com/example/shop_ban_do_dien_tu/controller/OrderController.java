@@ -5,14 +5,17 @@ import com.example.shop_ban_do_dien_tu.model.User;
 import com.example.shop_ban_do_dien_tu.service.IOrderService;
 import com.example.shop_ban_do_dien_tu.service.IUserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Controller
+@RestController  // Chuyển từ @Controller sang @RestController
 @RequestMapping("/orders")
 public class OrderController {
 
@@ -24,51 +27,48 @@ public class OrderController {
         this.userService = userService;
     }
 
-    // ✅ ADMIN: xem toàn bộ đơn hàng
+    // ✅ ADMIN: xem toàn bộ đơn hàng (trả về JSON)
     @GetMapping("/admin")
-    public String allOrders(Model model) {
-        model.addAttribute("orders", orderService.getAllOrders());
-        return "order-list-admin";
+    public List<Order> allOrders() {
+        return orderService.getAllOrders(); // Trả về danh sách đơn hàng dưới dạng JSON
     }
 
-    // ✅ USER: xem lịch sử đơn hàng của mình
+    // ✅ USER: xem lịch sử đơn hàng của mình (trả về JSON)
     @GetMapping("/user/{userId}")
-    public String userOrders(@PathVariable Long userId, Model model) {
-        model.addAttribute("orders", orderService.getOrdersByUser(userId));
-        return "order-list-user";
+    public List<Order> userOrders(@PathVariable Long userId) {
+        return orderService.getOrdersByUser(userId); // Trả về danh sách đơn hàng của người dùng dưới dạng JSON
     }
 
-    // ✅ ADMIN: cập nhật trạng thái đơn hàng
+    // ✅ ADMIN: cập nhật trạng thái đơn hàng (trả về JSON với thông báo)
     @GetMapping("/update-status/{id}")
-    public String updateOrderStatus(@PathVariable Long id, @RequestParam("status") Order.OrderStatus status) {
+    public ResponseEntity<String> updateOrderStatus(@PathVariable Long id, @RequestParam("status") Order.OrderStatus status) {
         orderService.getOrderById(id).ifPresent(order -> {
             order.setStatus(status);
             orderService.saveOrder(order);
         });
-        return "redirect:/orders/admin";
+        return ResponseEntity.ok("Trạng thái đơn hàng đã được cập nhật.");
     }
 
-    // ✅ USER: tạo đơn hàng (giả định đã có userId)
+    // ✅ USER: tạo đơn hàng (trả về JSON)
     @PostMapping("/create")
-    public String createOrder(@ModelAttribute Order order, @RequestParam Long userId) {
+    public ResponseEntity<Order> createOrder(@RequestBody Order order, @RequestParam Long userId) {
         User user = userService.getUserById(userId).orElseThrow();
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(Order.OrderStatus.PROCESSING);
-        orderService.saveOrder(order);
-        return "redirect:/orders/user/" + userId;
+        order = orderService.saveOrder(order);
+        return ResponseEntity.ok(order); // Trả về đơn hàng đã tạo dưới dạng JSON
     }
+
+    // ✅ USER: thanh toán và tạo đơn hàng (trả về JSON với thông báo)
     @PostMapping("/checkout")
-    public String checkout(@RequestParam String paymentMethod,
-                           @RequestParam String shippingAddress,
-                           HttpSession session,
-                           RedirectAttributes redirectAttributes) {
+    public ResponseEntity<String> checkout(@RequestParam String paymentMethod,
+                                           @RequestParam String shippingAddress,
+                                           HttpSession session) {
         User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) return "redirect:/login";
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập.");
 
         orderService.checkout(user.getId(), paymentMethod, shippingAddress);
-
-        redirectAttributes.addFlashAttribute("success", "Đặt hàng thành công!");
-        return "redirect:/orders/user/" + user.getId();
+        return ResponseEntity.ok("Đặt hàng thành công!");
     }
 }

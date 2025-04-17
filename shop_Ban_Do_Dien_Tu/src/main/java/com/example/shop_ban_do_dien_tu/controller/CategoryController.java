@@ -2,11 +2,14 @@ package com.example.shop_ban_do_dien_tu.controller;
 
 import com.example.shop_ban_do_dien_tu.model.Category;
 import com.example.shop_ban_do_dien_tu.service.ICategoryService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController  // Chuyển từ @Controller sang @RestController
 @RequestMapping("/admin/categories")
 public class CategoryController {
 
@@ -16,33 +19,31 @@ public class CategoryController {
         this.categoryService = service;
     }
 
+    // ✅ Lấy tất cả danh mục (trả về JSON)
     @GetMapping
-    public String listCategories(Model model) {
-        model.addAttribute("categories", categoryService.getAllCategories());
-        return "category-list";
+    public List<Category> listCategories() {
+        return categoryService.getAllCategories();  // Trả về danh sách Category dưới dạng JSON
     }
 
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("category", new Category());
-        return "category-form";
-    }
-
+    // ✅ Tạo mới danh mục (trả về JSON với thông báo)
     @PostMapping("/save")
-    public String saveCategory(@ModelAttribute Category category) {
+    public ResponseEntity<String> saveCategory(@RequestBody Category category) {
         categoryService.saveCategory(category);
-        return "redirect:/admin/categories";
+        return ResponseEntity.ok("Danh mục đã được lưu.");
     }
 
+    // ✅ Lấy thông tin một danh mục (trả về JSON)
     @GetMapping("/edit/{id}")
-    public String editCategory(@PathVariable Long id, Model model) {
-        categoryService.getCategoryById(id).ifPresent(c -> model.addAttribute("category", c));
-        return "category-form";
+    public ResponseEntity<Category> editCategory(@PathVariable Long id) {
+        return categoryService.getCategoryById(id)
+                .map(category -> ResponseEntity.ok(category))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteCategory(@PathVariable Long id) {
+    // ✅ Xoá danh mục (trả về JSON với thông báo)
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
-        return "redirect:/admin/categories";
+        return ResponseEntity.ok("Danh mục đã được xóa.");
     }
 }

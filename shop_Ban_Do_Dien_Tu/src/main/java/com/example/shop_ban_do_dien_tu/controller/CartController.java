@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController  // Chuyển từ @Controller sang @RestController
 @RequestMapping("/cart")
 public class CartController {
 
@@ -16,12 +16,12 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    // ✅ Lấy giỏ hàng theo user
+    // ✅ Lấy giỏ hàng theo user (trả về JSON)
     @GetMapping("/{userId}")
-    public String viewCart(@PathVariable Long userId, Model model) {
-        Cart cart = cartService.getCartByUserId(userId)
+    public Cart viewCart(@PathVariable Long userId) {
+        // Trả về Cart đối tượng (Spring sẽ tự chuyển đổi thành JSON)
+        return cartService.getCartByUserId(userId)
                 .orElseGet(() -> cartService.createCartForUser(userId));
-        model.addAttribute("cart", cart);
-        return "cart-view"; // Tên view HTML
     }
 }
+
