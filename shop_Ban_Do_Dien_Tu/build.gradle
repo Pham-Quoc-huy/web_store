@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(21)  // Nên dùng Java 17 hoặc 11 cho Spring Boot 3.x
     }
 }
 
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    // Spring MVC
+    // Spring MVC (Web)
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // View engine Thymeleaf
@@ -27,18 +27,21 @@ dependencies {
     // Spring Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // Lombok
+    // Lombok for cleaner code
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.projectlombok:lombok'
 
-    // Database
-    runtimeOnly 'com.mysql:mysql-connector-j'  // dùng nếu có MySQL
-    runtimeOnly 'com.h2database:h2'            // dùng để dev nhanh
+    // Database (H2 for dev and MySQL for production)
+    runtimeOnly 'com.mysql:mysql-connector-j'   // Production: MySQL
+    runtimeOnly 'com.h2database:h2'             // Development: H2 (lightweight database)
 
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Springdoc OpenAPI for Swagger UI
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 }
 
 tasks.named('test') {

@@ -3,13 +3,8 @@ package com.example.shop_ban_do_dien_tu.controller;
 import com.example.shop_ban_do_dien_tu.model.Order;
 import com.example.shop_ban_do_dien_tu.service.IOrderDetailService;
 import com.example.shop_ban_do_dien_tu.service.IOrderService;
-<<<<<<< Updated upstream
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-=======
 import com.example.shop_ban_do_dien_tu.model.OrderDetail;
 import org.springframework.http.ResponseEntity;
->>>>>>> Stashed changes
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
