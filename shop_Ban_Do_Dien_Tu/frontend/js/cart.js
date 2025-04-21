@@ -1,49 +1,49 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const cartBody = document.getElementById("cart-body");
-  const totalPriceSpan = document.getElementById("total-price");
-
-  // Lấy giỏ hàng từ localStorage (dạng array sản phẩm)
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const totalPrice = document.getElementById("total-price");
 
   function renderCart() {
     cartBody.innerHTML = "";
     let total = 0;
 
-    if (cart.length === 0) {
-      cartBody.innerHTML = '<tr><td colspan="5">Giỏ hàng trống</td></tr>';
-      totalPriceSpan.textContent = "0";
-      return;
-    }
-
     cart.forEach((item, index) => {
-      const row = document.createElement("tr");
-
       const itemTotal = item.price * item.quantity;
       total += itemTotal;
 
+      const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${item.name}</td>
+        <td>
+          <img src="${item.imageUrl}" alt="${item.name}" width="50" style="vertical-align: middle; margin-right: 8px;">
+          ${item.name}
+        </td>
         <td>${item.price.toLocaleString()} VND</td>
-        <td>${item.quantity}</td>
+        <td>
+          <input type="number" min="1" value="${item.quantity}" onchange="updateQuantity(${index}, this.value)">
+        </td>
         <td>${itemTotal.toLocaleString()} VND</td>
-        <td><button data-index="${index}" class="remove-btn">X</button></td>
+        <td><button onclick="removeItem(${index})">X</button></td>
       `;
-
       cartBody.appendChild(row);
     });
 
-    totalPriceSpan.textContent = total.toLocaleString();
+    totalPrice.textContent = total.toLocaleString();
   }
 
-  // Xử lý nút xoá
-  cartBody.addEventListener("click", function (e) {
-    if (e.target.classList.contains("remove-btn")) {
-      const index = e.target.dataset.index;
-      cart.splice(index, 1);
+  window.updateQuantity = function(index, newQty) {
+    const quantity = parseInt(newQty);
+    if (quantity > 0) {
+      cart[index].quantity = quantity;
       localStorage.setItem("cart", JSON.stringify(cart));
       renderCart();
     }
-  });
+  }
+
+  window.removeItem = function(index) {
+    cart.splice(index, 1);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    renderCart();
+  }
 
   renderCart();
 });

@@ -5,38 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giỏ hàng</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .cart-container {
+          max-width: 1000px;
+          margin: 40px auto;
+          padding: 20px;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th, td {
+          padding: 12px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+        th {
+          background-color: #f5f5f5;
+        }
+        tr:last-child td {
+          border-bottom: none;
+        }
+        .cart-total {
+          text-align: right;
+          font-size: 20px;
+          margin-top: 20px;
+          font-weight: bold;
+        }
+        .cart-actions button {
+          padding: 8px 14px;
+          background-color: #d32f2f;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .cart-actions button:hover {
+          background-color: #c2185b;
+        }
+        .cart-empty {
+          text-align: center;
+          color: #888;
+          font-size: 18px;
+          padding: 40px 0;
+        }
+      .checkout-btn {
+          background-color: #e91e63;
+          color: #fff;
+          padding: 10px 20px;
+          font-size: 16px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .checkout-btn:hover {
+          background-color: #c2185b;
+        }
+    </style>
 </head>
 <body>
+<div class="top-bar">
+    <div class="container">
+        <span>Giao hàng toàn quốc | Hỗ trợ trả góp | Hotline: 0123 456 789</span>
+    </div>
+</div>
+
 <header class="main-header">
     <div class="container header-content">
         <div class="logo">SHOP ĐIỆN TỬ</div>
         <div class="header-icons">
             <a href="index.html">Trang chủ</a>
-            <a href="checkout.html">Thanh toán</a>
         </div>
     </div>
 </header>
 
-<main class="container">
+<main class="container cart-container">
     <h2>Giỏ hàng của bạn</h2>
-    <table id="cart-table">
+    <table>
         <thead>
         <tr>
             <th>Sản phẩm</th>
             <th>Giá</th>
             <th>Số lượng</th>
-            <th>Thành tiền</th>
-            <th>Xoá</th>
+            <th>Tạm tính</th>
+            <th>Xóa</th>
         </tr>
         </thead>
         <tbody id="cart-body">
-        <!-- JS sẽ render sản phẩm vào đây -->
+        <!-- Dữ liệu sẽ được thêm bằng JS -->
         </tbody>
     </table>
-
-    <div class="cart-summary">
-        <p><strong>Tổng cộng: <span id="total-price">0</span> VND</strong></p>
-        <a href="checkout.html"><button>Tiến hành thanh toán</button></a>
+    <div class="cart-total">
+        Tổng cộng: <span id="total-price">0</span> VND
+    </div>
+    <div class="cart-actions" style="margin-top: 20px; text-align: right;">
+        <a href="checkout.html"><button class="checkout-btn">Tiến hành thanh toán</button></a>
     </div>
 </main>
 

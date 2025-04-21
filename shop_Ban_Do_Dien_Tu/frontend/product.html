@@ -1,4 +1,3 @@
-<!-- File: frontend/product.html -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -26,17 +25,17 @@
 
 <main class="container product-detail">
     <div class="product-image">
-        <img src="img/tivi-demo.png" alt="Tivi LG 50 inch">
+        <img id="product-image" src="" alt="Ảnh sản phẩm" width="300">
     </div>
     <div class="product-info">
-        <h2>Tivi LG 50 inch 4K Smart</h2>
-        <p class="price">12,000,000 VND</p>
-        <p class="desc">Smart Tivi LG với độ phân giải 4K, hỗ trợ HDR, tích hợp các ứng dụng phổ biến như YouTube, Netflix và điều khiển giọng nói.</p>
+        <h2 id="product-name">Tên sản phẩm</h2>
+        <p class="price" id="product-price"></p>
+        <p class="desc" id="product-desc">Đang tải mô tả...</p>
 
         <label for="quantity">Số lượng:</label>
         <input type="number" id="quantity" name="quantity" min="1" value="1">
 
-        <button>Thêm vào giỏ hàng</button>
+        <button onclick="addToCart()">Thêm vào giỏ hàng</button>
     </div>
 </main>
 
@@ -45,5 +44,47 @@
         <p>&copy; 2025 Shop Bán Đồ Điện Tử | Chính sách bảo mật | Điều khoản sử dụng</p>
     </div>
 </footer>
+
+<script>
+    let currentProduct = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      if (!id) return;
+
+      try {
+        const res = await fetch(`http://localhost:8088/api/products/${id}`);
+        const product = await res.json();
+        currentProduct = product;
+
+        document.getElementById("product-image").src = product.imageUrl || "https://via.placeholder.com/300";
+        document.getElementById("product-image").alt = product.name || "Sản phẩm";
+        document.getElementById("product-name").textContent = product.name || "Không có tên";
+        document.getElementById("product-price").textContent = product.price ? `${product.price.toLocaleString()} VND` : "Liên hệ";
+        document.getElementById("product-desc").textContent = product.description || "Chưa có mô tả cho sản phẩm này.";
+      } catch (err) {
+        console.error("Lỗi khi tải sản phẩm:", err);
+        document.querySelector("main").innerHTML = "<p style='color: red;'>Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.</p>";
+      }
+    });
+
+    function addToCart() {
+      const quantity = parseInt(document.getElementById("quantity").value) || 1;
+      if (!currentProduct) return;
+
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const existing = cart.find(p => p.id === currentProduct.id);
+      if (existing) {
+        existing.quantity += quantity;
+      } else {
+        cart.push({ ...currentProduct, quantity });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("✅ Đã thêm sản phẩm vào giỏ hàng!");
+    }
+</script>
 </body>
 </html>

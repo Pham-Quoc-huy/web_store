@@ -7,8 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@RestController  // Chuyển từ @Controller sang @RestController
-@RequestMapping("/products")
+@RestController
+@RequestMapping("/api/products")
+@CrossOrigin(origins = "http://localhost:63342")
 public class ProductController {
 
     private final IProductService productService;
@@ -22,6 +23,7 @@ public class ProductController {
     // ✅ Admin + User: Xem danh sách sản phẩm (trả về JSON)
     @GetMapping
     public ResponseEntity<List<Product>> listProducts() {
+        System.out.println("Fetching all products..."); // Log đơn giản
         List<Product> products = productService.getAllProducts();
         return ResponseEntity.ok(products); // Trả về danh sách sản phẩm dưới dạng JSON
     }
