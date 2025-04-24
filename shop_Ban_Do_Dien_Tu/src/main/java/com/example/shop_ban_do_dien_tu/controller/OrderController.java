@@ -1,5 +1,6 @@
 package com.example.shop_ban_do_dien_tu.controller;
 
+import com.example.shop_ban_do_dien_tu.dto.CheckoutRequest;
 import com.example.shop_ban_do_dien_tu.model.Order;
 import com.example.shop_ban_do_dien_tu.model.User;
 import com.example.shop_ban_do_dien_tu.service.IOrderService;
@@ -62,13 +63,13 @@ public class OrderController {
 
     // ✅ USER: thanh toán và tạo đơn hàng (trả về JSON với thông báo)
     @PostMapping("/checkout")
-    public ResponseEntity<String> checkout(@RequestParam String paymentMethod,
-                                           @RequestParam String shippingAddress,
-                                           HttpSession session) {
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập.");
-
-        orderService.checkout(user.getId(), paymentMethod, shippingAddress);
+    public ResponseEntity<String> checkout(@RequestBody CheckoutRequest request) {
+        orderService.checkout(
+                request.getUserId(),
+                request.getPaymentMethod(),
+                request.getShippingAddress()
+        );
         return ResponseEntity.ok("Đặt hàng thành công!");
     }
+
 }

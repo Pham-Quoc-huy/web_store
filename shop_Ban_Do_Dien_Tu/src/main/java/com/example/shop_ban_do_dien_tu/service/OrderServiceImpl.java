@@ -2,6 +2,7 @@ package com.example.shop_ban_do_dien_tu.service;
 
 import com.example.shop_ban_do_dien_tu.model.*;
 import com.example.shop_ban_do_dien_tu.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,18 +16,18 @@ public class OrderServiceImpl implements IOrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final PromotionRepository promotionRepository;
+    private final UserRepository userRepository;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             CartRepository cartRepository,
                             CartItemRepository cartItemRepository,
                             OrderDetailRepository orderDetailRepository,
-                            PromotionRepository promotionRepository) {
+                            UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.orderDetailRepository = orderDetailRepository;
-        this.promotionRepository = promotionRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -55,56 +56,48 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public Order checkout(Long userId, String paymentMethod, String shippingAddress) {
-        Cart cart = cartRepository.findByUserId(userId).orElseThrow();
+    @Transactional
+    public void checkout(Long userId, String paymentMethod, String shippingAddress) {
+        Cart cart = cartRepository.findByUserId(userId)
+
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng"));
+        System.out.println("Checkout userId = " + userId);
+
         List<CartItem> items = cartItemRepository.findByCartId(cart.getId());
+        System.out.println("Số lượng sản phẩm trong giỏ: " + items.size());
 
-        if (items.isEmpty()) throw new IllegalStateException("Giỏ hàng trống");
+        if (items.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng trống!");
+        }
 
-        double total = 0.0;
+        double total = items.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
         Order order = Order.builder()
-                .user(cart.getUser())
+                .user(user)
                 .orderDate(LocalDateTime.now())
                 .paymentMethod(paymentMethod)
                 .shippingAddress(shippingAddress)
                 .status(Order.OrderStatus.PROCESSING)
-                .totalAmount(0.0) // sẽ cập nhật sau
+                .totalAmount(total)
                 .build();
+
         order = orderRepository.save(order);
 
         for (CartItem item : items) {
-            Product product = item.getProduct();
-            double price = product.getPrice();
-
-            Optional<Promotion> promo = promotionRepository.findByCategoryIdAndActiveTrue(product.getCategory().getId());
-            if (promo.isPresent() && isValid(promo.get())) {
-                double discount = price * promo.get().getDiscountPercent() / 100;
-                price -= discount;
-            }
-
-            total += price * item.getQuantity();
-
-            orderDetailRepository.save(OrderDetail.builder()
+            OrderDetail detail = OrderDetail.builder()
                     .order(order)
-                    .product(product)
+                    .product(item.getProduct())
                     .quantity(item.getQuantity())
-                    .price(price)
-                    .build());
+                    .price(item.getProduct().getPrice())
+                    .build();
+            orderDetailRepository.save(detail);
         }
 
-        // ✅ Cập nhật tổng tiền
-        order.setTotalAmount(total);
-        orderRepository.save(order);
-
-        cartItemRepository.deleteAll(items); // xoá giỏ hàng sau khi mua
-        return order;
-    }
-
-    private boolean isValid(Promotion promo) {
-        LocalDateTime now = LocalDateTime.now();
-        return promo.getActive()
-                && (promo.getStartDate() == null || !now.isBefore(promo.getStartDate()))
-                && (promo.getEndDate() == null || !now.isAfter(promo.getEndDate()));
+        cartItemRepository.deleteAll(items);
     }
 }

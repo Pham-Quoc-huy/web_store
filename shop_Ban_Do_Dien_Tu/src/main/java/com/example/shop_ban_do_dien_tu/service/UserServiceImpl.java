@@ -34,6 +34,7 @@ public class UserServiceImpl implements IUserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email đã tồn tại");
         }
+        user.setRole(User.Role.ADMIN);
         return userRepository.save(user);
     }
 
@@ -58,5 +59,20 @@ public class UserServiceImpl implements IUserService {
         }
         user.setRole(User.Role.CUSTOMER);
         return userRepository.save(user);
+    }
+
+    @Override
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 }

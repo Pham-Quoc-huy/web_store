@@ -62,7 +62,7 @@
         document.getElementById("product-image").src = product.imageUrl || "https://via.placeholder.com/300";
         document.getElementById("product-image").alt = product.name || "Sản phẩm";
         document.getElementById("product-name").textContent = product.name || "Không có tên";
-        document.getElementById("product-price").textContent = product.price ? `${product.price.toLocaleString()} VND` : "Liên hệ";
+        document.getElementById("product-price").textContent = product.price ? `${product.price.toLocaleString('vi-VN')} VND` : "Liên hệ";
         document.getElementById("product-desc").textContent = product.description || "Chưa có mô tả cho sản phẩm này.";
       } catch (err) {
         console.error("Lỗi khi tải sản phẩm:", err);
@@ -71,20 +71,33 @@
     });
 
     function addToCart() {
+      const userId = localStorage.getItem("userId");
       const quantity = parseInt(document.getElementById("quantity").value) || 1;
-      if (!currentProduct) return;
 
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const existing = cart.find(p => p.id === currentProduct.id);
-      if (existing) {
-        existing.quantity += quantity;
-      } else {
-        cart.push({ ...currentProduct, quantity });
+      if (!userId) {
+        alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+        return;
       }
 
-      localStorage.setItem("cart", JSON.stringify(cart));
-      alert("✅ Đã thêm sản phẩm vào giỏ hàng!");
+      if (!currentProduct) {
+        alert("Không thể xác định sản phẩm.");
+        return;
+      }
+
+      fetch("http://localhost:8088/cart-items/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: parseInt(userId),
+          productId: currentProduct.id,
+          quantity: quantity
+        })
+      })
+      .then(res => res.text())
+      .then(msg => alert("✅ " + msg))
+      .catch(err => console.error("Lỗi khi thêm vào giỏ hàng:", err));
     }
 </script>
+
 </body>
 </html>

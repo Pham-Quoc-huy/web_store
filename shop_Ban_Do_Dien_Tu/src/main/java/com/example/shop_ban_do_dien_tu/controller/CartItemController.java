@@ -2,55 +2,71 @@ package com.example.shop_ban_do_dien_tu.controller;
 
 import com.example.shop_ban_do_dien_tu.model.Cart;
 import com.example.shop_ban_do_dien_tu.model.CartItem;
-import com.example.shop_ban_do_dien_tu.model.User;
+import com.example.shop_ban_do_dien_tu.model.Product;
 import com.example.shop_ban_do_dien_tu.service.ICartItemService;
 import com.example.shop_ban_do_dien_tu.service.ICartService;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.http.HttpStatus;
+import com.example.shop_ban_do_dien_tu.service.IProductService;
+import com.example.shop_ban_do_dien_tu.dto.CartItemRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
-@RestController  // Chuyển từ @Controller sang @RestController
+import java.util.List;
+import java.util.Map;
+
+@RestController
 @RequestMapping("/cart-items")
 public class CartItemController {
 
     private final ICartItemService cartItemService;
     private final ICartService cartService;
+    private final IProductService productService;
 
-    public CartItemController(ICartItemService itemService, ICartService cartService) {
+    public CartItemController(ICartItemService itemService, ICartService cartService, IProductService productService) {
         this.cartItemService = itemService;
         this.cartService = cartService;
+        this.productService = productService;
     }
 
-    // ✅ Xem giỏ hàng theo cartId (trả về JSON)
     @GetMapping("/cart/{cartId}")
     public ResponseEntity<List<CartItem>> viewCartItems(@PathVariable Long cartId) {
         List<CartItem> items = cartItemService.getItemsByCart(cartId);
-        return ResponseEntity.ok(items); // Trả về danh sách CartItem dưới dạng JSON
+        return ResponseEntity.ok(items);
     }
 
-    // ✅ Thêm sản phẩm vào giỏ (dùng session để lấy user, trả về JSON)
     @PostMapping("/add")
-    public ResponseEntity<String> addToCart(@RequestParam Long productId,
-                                            @RequestParam(defaultValue = "1") int quantity,
-                                            HttpSession session) {
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
-        }
+    public ResponseEntity<String> addToCart(@RequestBody CartItemRequest request) {
+        Long userId = request.getUserId();
+        Long productId = request.getProductId();
+        int quantity = request.getQuantity();
 
-        Cart cart = cartService.getCartByUserId(user.getId())
-                .orElseGet(() -> cartService.createCartForUser(user.getId()));
+        Cart cart = cartService.getCartByUserId(userId)
+                .orElseGet(() -> cartService.createCartForUser(userId));
 
-        cartItemService.addOrUpdateItem(cart.getId(), productId, quantity);
+        Product product = productService.getProductById(productId)
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+
+        cartItemService.addOrUpdateItem(cart.getId(), product.getId(), quantity);
         return ResponseEntity.ok("Đã thêm vào giỏ hàng.");
     }
 
-    // ✅ Xoá sản phẩm khỏi giỏ (trả về JSON)
+    @PutMapping("/update/{itemId}")
+    public ResponseEntity<String> updateQuantity(@PathVariable Long itemId, @RequestBody Map<String, Integer> body) {
+        int quantity = body.get("quantity");
+        cartItemService.updateQuantity(itemId, quantity);
+        return ResponseEntity.ok("Đã cập nhật số lượng");
+    }
+
     @GetMapping("/delete/{itemId}")
     public ResponseEntity<String> removeFromCart(@PathVariable Long itemId, @RequestParam Long cartId) {
         cartItemService.removeItem(itemId);
         return ResponseEntity.ok("Đã xoá sản phẩm khỏi giỏ.");
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CartItem>> getCartItemsByUserId(@PathVariable Long userId) {
+        return cartService.getCartByUserId(userId)
+                .map(cart -> ResponseEntity.ok(cartItemService.getItemsByCart(cart.getId())))
+                .orElse(ResponseEntity.ok(List.of()));
+    }
+
 }

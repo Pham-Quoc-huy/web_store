@@ -1,49 +1,79 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const cartBody = document.getElementById("cart-body");
-  const totalPrice = document.getElementById("total-price");
+document.addEventListener("DOMContentLoaded", loadCart);
 
-  function renderCart() {
-    cartBody.innerHTML = "";
-    let total = 0;
-
-    cart.forEach((item, index) => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
-
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>
-          <img src="${item.imageUrl}" alt="${item.name}" width="50" style="vertical-align: middle; margin-right: 8px;">
-          ${item.name}
-        </td>
-        <td>${item.price.toLocaleString()} VND</td>
-        <td>
-          <input type="number" min="1" value="${item.quantity}" onchange="updateQuantity(${index}, this.value)">
-        </td>
-        <td>${itemTotal.toLocaleString()} VND</td>
-        <td><button onclick="removeItem(${index})">X</button></td>
-      `;
-      cartBody.appendChild(row);
-    });
-
-    totalPrice.textContent = total.toLocaleString();
+function loadCart() {
+  const userId = localStorage.getItem("userId");
+  if (!userId) {
+    document.getElementById("cart-body").innerHTML = "<tr><td colspan='5'>Bạn chưa đăng nhập.</td></tr>";
+    return;
   }
 
-  window.updateQuantity = function(index, newQty) {
-    const quantity = parseInt(newQty);
-    if (quantity > 0) {
-      cart[index].quantity = quantity;
-      localStorage.setItem("cart", JSON.stringify(cart));
-      renderCart();
-    }
-  }
+  fetch(`http://localhost:8088/cart-items/user/${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("cart-body");
+      const totalPriceEl = document.getElementById("total-price");
+      tbody.innerHTML = "";
 
-  window.removeItem = function(index) {
-    cart.splice(index, 1);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    renderCart();
-  }
+      if (data.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5'>Giỏ hàng của bạn đang trống.</td></tr>";
+        totalPriceEl.textContent = "0";
+        return;
+      }
 
-  renderCart();
-});
+      let total = 0;
+      data.forEach(item => {
+        const subtotal = item.product.price * item.quantity;
+        total += subtotal;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td style="display: flex; align-items: center; gap: 10px;">
+            <img src="${item.product.imageUrl}" alt="${item.product.name}" width="50" height="50" style="object-fit: cover; border-radius: 6px;">
+            <span>${item.product.name}</span>
+          </td>
+          <td>${item.product.price.toLocaleString('vi-VN')} VND</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <input
+                type="number"
+                value="${item.quantity}"
+                min="1"
+                style="width: 50px; text-align: center; padding: 4px;"
+                onchange="updateQuantity(${item.id}, this.value)">
+            </div>
+          </td>
+          <td>${subtotal.toLocaleString('vi-VN')} VND</td>
+          <td><button onclick="removeFromCart(${item.id})">Xóa</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      totalPriceEl.textContent = total.toLocaleString('vi-VN');
+    })
+    .catch(err => console.error("Lỗi khi tải giỏ hàng:", err));
+}
+
+function updateQuantity(cartItemId, newQuantity) {
+  newQuantity = parseInt(newQuantity);
+  if (isNaN(newQuantity) || newQuantity < 1) return;
+
+  fetch(`http://localhost:8088/cart-items/update/${cartItemId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ quantity: newQuantity })
+  })
+    .then(() => loadCart())
+    .catch(err => console.error("Lỗi cập nhật số lượng:", err));
+}
+
+function removeFromCart(id) {
+  fetch(`http://localhost:8088/cart-items/delete/${id}?cartId=0`, {
+    method: "GET",
+  })
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+      loadCart();
+    })
+    .catch(err => console.error("Lỗi khi xoá sản phẩm:", err));
+}

@@ -51,4 +51,12 @@ public class CartItemServiceImpl implements ICartItemService {
     public void removeItem(Long cartItemId) {
         cartItemRepository.deleteById(cartItemId);
     }
+    @Override
+    public void updateQuantity(Long itemId, int quantity) {
+        CartItem item = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm trong giỏ"));
+        item.setQuantity(quantity);
+        cartItemRepository.save(item);
+    }
+
 }

@@ -11,6 +11,6 @@ public interface IOrderService {
     Optional<Order> getOrderById(Long id);
     Order saveOrder(Order order);
     void deleteOrder(Long id);
-    Order checkout(Long userId, String paymentMethod, String shippingAddress);
+    void checkout(Long userId, String paymentMethod, String shippingAddress);
 
 }

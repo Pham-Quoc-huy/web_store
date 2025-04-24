@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -8,18 +7,20 @@
 </head>
 <body>
 
-
-
 <header class="main-header">
     <div class="container header-content">
         <div class="logo">SHOP ĐIỆN TỬ</div>
         <div class="search-bar">
-            <input type="text" placeholder="Bạn cần tìm gì?">
-            <button>Tìm kiếm</button>
+            <input type="text" id="search-input" placeholder="Bạn cần tìm gì?">
+            <button onclick="searchProducts()">Tìm kiếm</button>
         </div>
         <div class="header-icons">
             <a href="cart.html">Giỏ hàng</a>
-            <a href="login.html">Đăng nhập</a>
+            <span id="user-greeting" style="margin-right: 10px;"></span>
+            <a href="login.html" id="login-link">Đăng nhập</a>
+            <a href="register.html" id="register-link">Đăng ký</a>
+            <a href="#" id="logout-link" style="display: none;">Đăng xuất</a>
+
         </div>
     </div>
 </header>
@@ -28,19 +29,16 @@
     <aside class="sidebar">
         <h3>Danh mục sản phẩm</h3>
         <ul>
-            <li>Điện tử, điện máy</li>
-            <li>Điện gia dụng</li>
-            <li>Điện tử, viễn thông</li>
-            <li>Đồ gia dụng</li>
-            <li>Phụ kiện</li>
+            <li onclick="filterByCategory(1)">Điện tử,điện máy</li>
+            <li onclick="filterByCategory(2)">Điện gia dụng</li>
+            <li onclick="filterByCategory(3)">Điện tử, viễn thông</li>
+            <li onclick="filterByCategory(4)">Đồ gia dụng</li>
+            <li onclick="filterByCategory(5)">Phụ kiện</li>
+            <li onclick="filterByCategory(0)">Tất cả sản phẩm</li>
         </ul>
     </aside>
 
-    <section class="content">
-        <div class="banner">
-            <h2>Khuyến mãi cực sốc</h2>
-            <p>Giảm giá tới 50% cho các sản phẩm điện tử</p>
-        </div>
+
 
         <section class="products" id="products">
             <div class="product-grid" id="productList"></div>
@@ -55,5 +53,8 @@
 </footer>
 
 <script src="js/script.js"></script>
+<script>
+
+</script>
 </body>
 </html>

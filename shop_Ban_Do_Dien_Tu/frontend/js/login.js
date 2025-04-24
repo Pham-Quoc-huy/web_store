@@ -20,11 +20,21 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!res.ok) throw new Error("Đăng nhập thất bại");
       return res.json();
     })
-    .then(data => {
-      alert("Đăng nhập thành công!");
-      console.log(data);
-      window.location.href = "index.html";
-    })
+   .then(data => {
+     console.log("Dữ liệu trả về từ backend:", data);
+     alert("Đăng nhập thành công!");
+     localStorage.setItem("userId", data.id);
+     localStorage.setItem("username", data.username);
+     localStorage.setItem("role", data.role); // 👈 THÊM DÒNG NÀY
+
+     if (data.role === "ADMIN") {
+       window.location.href = "admin.html"; // 👉 chuyển sang trang admin
+     } else {
+       window.location.href = "index.html"; // 👉 người dùng thường
+     }
+   })
+
+
     .catch(err => {
       alert(err.message);
     });

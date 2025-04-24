@@ -5,7 +5,7 @@ import com.example.shop_ban_do_dien_tu.model.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface IUserService {
+public interface IUserService  {
     List<User> getAllUsers();
     Optional<User> getUserById(Long id);
     User createUser(User user);
@@ -14,4 +14,9 @@ public interface IUserService {
     // ✅ Thêm chức năng auth
     Optional<User> login(String username, String password);
     User register(User user);
+
+    // ✅ Thêm các phương thức cần thiết để xử lý controller
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
+    User save(User user);
 }
